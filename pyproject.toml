@@ -8,7 +8,7 @@ version = '1.0.1'
 authors = [
     { name='4ndrs', email='andres.degozaru@gmail.com' },
 ]
-description = 'Script to send suspend/continue signals to processes through the kill command'
+description = 'Script to send suspend/continue signals to processes through psutil'
 readme = 'README.md'
 license = { file='LICENSE' }
 requires-python = '>=3.10'
