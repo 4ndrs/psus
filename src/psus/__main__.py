@@ -3,8 +3,7 @@
 # SPDX-License-Identifier: MIT
 # pylint: disable=missing-module-docstring
 import sys
-from os import getpid
-from subprocess import check_output, CalledProcessError  # nosec
+import psutil
 
 
 def main():
@@ -34,29 +33,27 @@ def main():
         process_txt = sys.argv[1]
         suspend = "suspend" in sys.argv[2]
 
-    try:
-        pids = (
-            check_output(["pgrep", "-f", process_txt])  # nosec
-            .decode()
-            .strip()
-            .split("\n")
-        )
-    except CalledProcessError:  # this will never raise because of our pid
+    our_pid = psutil.Process()
+    pids = {
+        ps.pid: ps
+        for ps in psutil.process_iter()
+        if process_txt in "".join(ps.cmdline())
+    }
+    if our_pid.pid in pids:
+        del pids[our_pid.pid]
+
+    if len(pids) < 1:
         print("No processes found", file=sys.stderr)
         sys.exit(4)
 
-    our_pid = str(getpid())
-    if our_pid in pids:
-        pids.remove(our_pid)
-
-    for pid in pids:
+    for pid in pids.values():
         if suspend:
-            check_output(["kill", "-SIGSTOP", pid])
+            pid.suspend()
         else:
-            check_output(["kill", "-SIGCONT", pid])
+            pid.resume()
 
     print(f"Signaled {len(pids)} process", end="")
-    if len(pids) != 1:  # n < 1 needed for CalledProcessError not being raised
+    if len(pids) > 1:
         print("es")
     else:
         print()
