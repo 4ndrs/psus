@@ -4,7 +4,7 @@ build-backend = 'hatchling.build'
 
 [project]
 name = 'psus'
-version = '1.0.0'
+version = '1.0.1'
 authors = [
     { name='4ndrs', email='andres.degozaru@gmail.com' },
 ]
@@ -12,6 +12,9 @@ description = 'Script to send suspend/continue signals to processes through the 
 readme = 'README.md'
 license = { file='LICENSE' }
 requires-python = '>=3.10'
+dependencies = [
+    'psutil ~= 5.9.1',
+]
 classifiers = [
     'Programming Language :: Python :: 3',
     'License :: OSI Approved :: MIT License',
